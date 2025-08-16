@@ -1,0 +1,166 @@
+{{ define "main" }}
+
+<section data-pagefind-body>
+  <article class="prompt-detail">
+    
+    <header class="prompt-header">
+      <h1 class="prompt-title">{{ .Title }}</h1>
+      {{ with .Params.summary }}
+        <p class="prompt-summary">{{ . }}</p>
+      {{ end }}
+      
+      <div class="prompt-meta">
+        {{ with .Params.category }}
+          <span class="prompt-category">{{ . }}</span>
+        {{ end }}
+        {{ with .Params.difficulty }}
+          <span class="prompt-difficulty">{{ . }}</span>
+        {{ end }}
+        {{ with .Params.author }}
+          <span class="prompt-author">By {{ . }}</span>
+        {{ end }}
+        {{ with .Date }}
+          <span class="prompt-date">{{ . | time.Format ":date_long" }}</span>
+        {{ end }}
+      </div>
+      
+      {{ with .Params.tags }}
+        <div class="prompt-tags">
+          {{ range . }} 
+            {{ $href := urlize . }}
+            <a href="/tags/{{ $href }}">{{ . | humanize }}</a>
+          {{ end }}
+        </div>
+      {{ end }}
+    </header>
+
+    <div data-cms-edit="content" class="markdown-text prompt-content">
+      {{ .Content }}
+    </div>
+  </article>
+  
+</section>
+
+<section class="prompt-related">
+  <h2 class="prompt-related-title">Related Resources</h2>
+  
+  <!-- Related Prompts -->
+  <div class="related-section">
+    <h3 class="related-section-title">Similar Prompts</h3>
+    <div class="prompt-related-list">
+      {{ $currentCategory := .Params.category }}
+      {{ $currentDifficulty := .Params.difficulty }}
+      {{ $allPrompts := where (where .Site.RegularPages "Section" "prompts") "Title" "!=" .Title }}
+      
+      <!-- First try to find prompts with same category -->
+      {{ $categoryMatches := where $allPrompts "Params.category" $currentCategory }}
+      
+      <!-- If no category matches, try difficulty level -->
+      {{ if not $categoryMatches }}
+        {{ $categoryMatches = where $allPrompts "Params.difficulty" $currentDifficulty }}
+      {{ end }}
+      
+      <!-- If still no matches, get any prompts -->
+      {{ if not $categoryMatches }}
+        {{ $categoryMatches = $allPrompts }}
+      {{ end }}
+      
+      {{ range $categoryMatches | first 3 }}
+        <div class="prompt-related-item">
+          <a class="prompt-related-title" href="{{ .Permalink | relURL }}">
+            {{ .Title }}
+          </a>
+          {{ with .Params.summary }}
+            <p class="prompt-related-summary">{{ . | truncate 100 }}</p>
+          {{ end }}
+          <div class="prompt-related-meta">
+            {{ with .Params.category }}
+              <span class="prompt-related-category">{{ . }}</span>
+            {{ end }}
+            {{ with .Params.difficulty }}
+              <span class="prompt-related-difficulty">{{ . }}</span>
+            {{ end }}
+          </div>
+        </div>
+      {{ end }}
+    </div>
+  </div>
+
+  <!-- Related Personas -->
+  <div class="related-section">
+    <h3 class="related-section-title">Suitable Personas</h3>
+    <div class="persona-related-list">
+      {{ $promptCategory := .Params.category }}
+      {{ $allPersonas := where .Site.RegularPages "Section" "personas" }}
+      
+      <!-- Smart matching based on prompt characteristics -->
+      {{ $relevantPersonas := slice }}
+      
+      {{ range $allPersonas }}
+        {{ $persona := . }}
+        {{ $isRelevant := false }}
+        
+        <!-- Check if persona role matches prompt category -->
+        {{ if in $promptCategory "Code" }}
+          {{ if eq .Params.primary_role "Developer" }}
+            {{ $isRelevant = true }}
+          {{ end }}
+        {{ else if in $promptCategory "Analysis" }}
+          {{ if or (eq .Params.primary_role "Analyst") (eq .Params.primary_role "Manager") }}
+            {{ $isRelevant = true }}
+          {{ end }}
+        {{ else if in $promptCategory "Creative" }}
+          {{ if eq .Params.primary_role "Creative Partner" }}
+            {{ $isRelevant = true }}
+          {{ end }}
+        {{ else if in $promptCategory "Technical" }}
+          {{ if or (eq .Params.primary_role "Developer") (eq .Params.primary_role "Specialist") }}
+            {{ $isRelevant = true }}
+          {{ end }}
+        {{ end }}
+        
+        <!-- Check communication style alignment -->
+        {{ if in $promptCategory "Code" }}
+          {{ if eq .Params.communication_style "Technical" }}
+            {{ $isRelevant = true }}
+          {{ end }}
+        {{ else if in $promptCategory "Creative" }}
+          {{ if or (eq .Params.communication_style "Casual") (eq .Params.communication_style "Creative") }}
+            {{ $isRelevant = true }}
+          {{ end }}
+        {{ end }}
+        
+        {{ if $isRelevant }}
+          {{ $relevantPersonas = $relevantPersonas | append $persona }}
+        {{ end }}
+      {{ end }}
+      
+      <!-- If no matches found, show some personas -->
+      {{ if not $relevantPersonas }}
+        {{ $relevantPersonas = $allPersonas | first 3 }}
+      {{ else }}
+        {{ $relevantPersonas = $relevantPersonas | first 3 }}
+      {{ end }}
+      
+      {{ range $relevantPersonas }}
+        <div class="persona-related-item">
+          <a class="persona-related-name" href="{{ .Permalink | relURL }}">
+            {{ .Params.name | default .Title }}
+          </a>
+          {{ with .Params.occupation }}
+            <p class="persona-related-occupation">{{ . }}</p>
+          {{ end }}
+          <div class="persona-related-meta">
+            {{ with .Params.primary_role }}
+              <span class="persona-related-role">{{ . }}</span>
+            {{ end }}
+            {{ with .Params.communication_style }}
+              <span class="persona-related-style">{{ . }}</span>
+            {{ end }}
+          </div>
+        </div>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}

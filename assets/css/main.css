@@ -5,6 +5,7 @@
 @import "./_footer.css";
 @import "./_blog.css";
 @import "./_post.css";
+@import "./_resources.css";
 
 @source "hugo_stats.json";
 

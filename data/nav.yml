@@ -6,12 +6,12 @@ header:
   text_color: '#333232'
   text_hover_color: '#034AD8'
   links:
-    - text: Blog
+    - text: Prompts
+      link: /prompts/
+    - text: Personas
+      link: /personas/
+    - text: Updates
       link: /blog/
-    - text: GitHub
-      link: https://github.com/CloudCannon/hugo-starter/
-    - text: CloudCannon
-      link: "https://cloudcannon.com/"
 footer:
   logo: /images/logos/logo-wordmark-white.png
   logo_url: '/'
@@ -35,11 +35,11 @@ footer:
       name: YouTube
       link: https://www.youtube.com/
   links:
-    - text: Blog
+    - text: Prompts
+      link: /prompts/
+    - text: Personas
+      link: /personas/
+    - text: Updates
       link: /blog/
-    - link: https://github.com/CloudCannon/hugo-starter/
-      text: GitHub
-    - link: "https://cloudcannon.com/"
-      text: CloudCannon
   copyright_start_date: 2025
-  copyright_statement: MyCompany. All rights reserved.
+  copyright_statement: Monotasker. All rights reserved.

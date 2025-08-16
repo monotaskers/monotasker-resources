@@ -1,0 +1,208 @@
+{{ define "main" }}
+
+<section data-pagefind-body>
+  <article class="persona-detail">
+    
+    <header class="persona-header">
+      <h1 class="persona-name">{{ .Params.name | default .Title }}</h1>
+      {{ with .Params.occupation }}
+        <h2 class="persona-occupation">{{ . }}</h2>
+      {{ end }}
+      
+      <div class="persona-meta">
+        {{ with .Params.primary_role }}
+          <span class="persona-role">{{ . }}</span>
+        {{ end }}
+        {{ with .Params.communication_style }}
+          <span class="persona-style">{{ . }} Style</span>
+        {{ end }}
+        {{ with .Params.status }}
+          <span class="persona-status status-{{ . | urlize }}">{{ . }}</span>
+        {{ end }}
+        {{ with .Params.client }}
+          <span class="persona-client">{{ . }}</span>
+        {{ end }}
+      </div>
+      
+      {{ with .Params.description }}
+        <p class="persona-description">{{ . }}</p>
+      {{ end }}
+    </header>
+
+    <div class="persona-details">
+      {{ with .Params.key_traits }}
+        <div class="persona-traits">
+          <h3>Key Traits</h3>
+          <div class="traits-list">
+            {{ range . }}
+              <span class="trait">{{ . }}</span>
+            {{ end }}
+          </div>
+        </div>
+      {{ end }}
+      
+      <div class="persona-info-grid">
+        {{ with .Params.pronoun_formality }}
+          <div class="persona-info-item">
+            <strong>Pronoun Formality:</strong> {{ . }}
+          </div>
+        {{ end }}
+        {{ with .Params.age }}
+          <div class="persona-info-item">
+            <strong>Age:</strong> {{ . }}
+          </div>
+        {{ end }}
+        {{ with .Params.effectiveness_rating }}
+          <div class="persona-info-item">
+            <strong>Effectiveness Rating:</strong> {{ . }}
+          </div>
+        {{ end }}
+        {{ with .Params.group }}
+          <div class="persona-info-item">
+            <strong>Group:</strong> {{ . }}
+          </div>
+        {{ end }}
+      </div>
+      
+      {{ with .Params.notes }}
+        <div class="persona-notes">
+          <h3>Notes</h3>
+          <p>{{ . }}</p>
+        </div>
+      {{ end }}
+    </div>
+
+    {{ with .Content }}
+      <div data-cms-edit="content" class="markdown-text persona-content">
+        <h3>Usage Guidelines</h3>
+        {{ . }}
+      </div>
+    {{ end }}
+  </article>
+  
+</section>
+
+<section class="persona-related">
+  <h2 class="persona-related-title">Related Resources</h2>
+  
+  <!-- Related Personas -->
+  <div class="related-section">
+    <h3 class="related-section-title">Similar Personas</h3>
+    <div class="persona-related-list">
+      {{ $currentRole := .Params.primary_role }}
+      {{ $currentStyle := .Params.communication_style }}
+      {{ $allPersonas := where (where .Site.RegularPages "Section" "personas") "Title" "!=" .Title }}
+      
+      <!-- First try to find personas with same role -->
+      {{ $roleMatches := where $allPersonas "Params.primary_role" $currentRole }}
+      
+      <!-- If no role matches, try communication style -->
+      {{ if not $roleMatches }}
+        {{ $roleMatches = where $allPersonas "Params.communication_style" $currentStyle }}
+      {{ end }}
+      
+      <!-- If still no matches, get any personas -->
+      {{ if not $roleMatches }}
+        {{ $roleMatches = $allPersonas }}
+      {{ end }}
+      
+      {{ range $roleMatches | first 3 }}
+        <div class="persona-related-item">
+          <a class="persona-related-name" href="{{ .Permalink | relURL }}">
+            {{ .Params.name | default .Title }}
+          </a>
+          {{ with .Params.occupation }}
+            <p class="persona-related-occupation">{{ . }}</p>
+          {{ end }}
+          <div class="persona-related-meta">
+            {{ with .Params.primary_role }}
+              <span class="persona-related-role">{{ . }}</span>
+            {{ end }}
+            {{ with .Params.communication_style }}
+              <span class="persona-related-style">{{ . }}</span>
+            {{ end }}
+          </div>
+        </div>
+      {{ end }}
+    </div>
+  </div>
+
+  <!-- Related Prompts -->
+  <div class="related-section">
+    <h3 class="related-section-title">Relevant Prompts</h3>
+    <div class="prompt-related-list">
+      {{ $personaRole := .Params.primary_role }}
+      {{ $personaStyle := .Params.communication_style }}
+      {{ $allPrompts := where .Site.RegularPages "Section" "prompts" }}
+      
+      <!-- Smart matching based on persona characteristics -->
+      {{ $relevantPrompts := slice }}
+      
+      {{ range $allPrompts }}
+        {{ $prompt := . }}
+        {{ $isRelevant := false }}
+        
+        <!-- Check if prompt category matches persona role -->
+        {{ if eq $personaRole "Developer" }}
+          {{ if or (in .Params.category "Code") (in .Params.category "Technical") }}
+            {{ $isRelevant = true }}
+          {{ end }}
+        {{ else if eq $personaRole "Manager" }}
+          {{ if or (in .Params.category "Analysis") (in .Params.category "Requirements") }}
+            {{ $isRelevant = true }}
+          {{ end }}
+        {{ else if eq $personaRole "Creative Partner" }}
+          {{ if in .Params.category "Creative" }}
+            {{ $isRelevant = true }}
+          {{ end }}
+        {{ else if eq $personaRole "Analyst" }}
+          {{ if in .Params.category "Analysis" }}
+            {{ $isRelevant = true }}
+          {{ end }}
+        {{ end }}
+        
+        <!-- Check communication style alignment -->
+        {{ if eq $personaStyle "Technical" }}
+          {{ if or (in .Params.category "Code") (in .Params.category "Technical") }}
+            {{ $isRelevant = true }}
+          {{ end }}
+        {{ else if eq $personaStyle "Creative" }}
+          {{ if in .Params.category "Creative" }}
+            {{ $isRelevant = true }}
+          {{ end }}
+        {{ end }}
+        
+        {{ if $isRelevant }}
+          {{ $relevantPrompts = $relevantPrompts | append $prompt }}
+        {{ end }}
+      {{ end }}
+      
+      <!-- If no matches found, show recent prompts -->
+      {{ if not $relevantPrompts }}
+        {{ $relevantPrompts = $allPrompts | first 3 }}
+      {{ else }}
+        {{ $relevantPrompts = $relevantPrompts | first 3 }}
+      {{ end }}
+      
+      {{ range $relevantPrompts }}
+        <div class="prompt-related-item">
+          <a class="prompt-related-title" href="{{ .Permalink | relURL }}">
+            {{ .Title }}
+          </a>
+          {{ with .Params.summary }}
+            <p class="prompt-related-summary">{{ . | truncate 100 }}</p>
+          {{ end }}
+          <div class="prompt-related-meta">
+            {{ with .Params.category }}
+              <span class="prompt-related-category">{{ . }}</span>
+            {{ end }}
+            {{ with .Params.difficulty }}
+              <span class="prompt-related-difficulty">{{ . }}</span>
+            {{ end }}
+          </div>
+        </div>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}

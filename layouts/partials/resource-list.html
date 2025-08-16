@@ -1,0 +1,165 @@
+<section class="resource-section">
+  <h1 class="resource-hero-title">{{ .context.Title }}</h1>
+  {{ with .context.Content }}
+    <div class="resource-description">{{ . }}</div>
+  {{ end }}
+  
+  <div class="search-bar">
+    <link href="/pagefind/pagefind-ui.css" rel="stylesheet">
+    <script src="/pagefind/pagefind-ui.js"></script>
+    <div id="search"></div>
+    <script>
+      window.addEventListener('DOMContentLoaded', (event) => {
+        new PagefindUI({ element: "#search", showSubResults: true });
+      });
+    </script>
+  </div>
+  
+  <div class="resource-grid">
+    {{ $section := .context.Section }}
+    {{ $allPages := .context.Pages }}
+    
+    <!-- Get all pages in this section, excluding the index page -->
+    {{ $pagesToPaginate := where $allPages "Kind" "page" }}
+    
+    <!-- Sort based on section type -->
+    {{ if eq $section "prompts" }}
+      {{ $pagesToPaginate = $pagesToPaginate.ByDate.Reverse }}
+    {{ else if eq $section "personas" }}
+      {{ $pagesToPaginate = $pagesToPaginate.ByTitle }}
+    {{ else }}
+      {{ $pagesToPaginate = $pagesToPaginate.ByDate.Reverse }}
+    {{ end }}
+
+    {{ range (.context.Paginate $pagesToPaginate .page_size).Pages }}
+      <div class="resource-item">
+        <div class="resource-content">
+          <h2 class="resource-title">
+            <a href="{{ .RelPermalink }}">
+              {{ if eq $section "personas" }}
+                {{ .Params.name | default .Title }}
+              {{ else }}
+                {{ .Title }}
+              {{ end }}
+            </a>
+          </h2>
+          
+          {{ if eq $section "prompts" }}
+            {{ with .Params.summary }}
+              <p class="resource-summary">{{ . }}</p>
+            {{ end }}
+            <div class="resource-meta">
+              {{ with .Params.category }}
+                <span class="resource-category">{{ . }}</span>
+              {{ end }}
+              {{ with .Params.difficulty }}
+                <span class="resource-difficulty">{{ . }}</span>
+              {{ end }}
+            </div>
+            {{ with .Params.tags }}
+              <div class="resource-tags">
+                {{ range . }} 
+                  {{ $href := urlize . }}
+                  <a href="/tags/{{ $href }}">{{ . | humanize }}</a>
+                {{ end }}
+              </div>
+            {{ end }}
+            
+          {{ else if eq $section "personas" }}
+            {{ with .Params.occupation }}
+              <p class="resource-occupation">{{ . }}</p>
+            {{ end }}
+            {{ with .Params.description }}
+              <p class="resource-description">{{ . | truncate 150 }}</p>
+            {{ end }}
+            <div class="resource-meta">
+              {{ with .Params.primary_role }}
+                <span class="resource-role">{{ . }}</span>
+              {{ end }}
+              {{ with .Params.communication_style }}
+                <span class="resource-style">{{ . }}</span>
+              {{ end }}
+              {{ with .Params.status }}
+                <span class="resource-status status-{{ . | urlize }}">{{ . }}</span>
+              {{ end }}
+            </div>
+            {{ with .Params.key_traits }}
+              <div class="resource-traits">
+                {{ range first 3 . }}
+                  <span class="trait-tag">{{ . }}</span>
+                {{ end }}
+                {{ if gt (len .) 3 }}
+                  <span class="trait-more">+{{ sub (len .) 3 }} more</span>
+                {{ end }}
+              </div>
+            {{ end }}
+          {{ end }}
+        </div>
+      </div>
+    {{ end }}
+  </div>
+  
+  {{ $paginator := .context.Paginator }} 
+  {{ if gt $paginator.TotalPages 1 }}
+    <nav class="resource-pagination">
+      <ul class="pagination">
+        {{ if $paginator.HasPrev }}
+          <li class="page-item">
+            <a class="page-link" href="{{ $paginator.Prev.URL }}">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20.657"
+                height="11.314"
+                viewBox="0 0 20.657 11.314"
+                style="transform: scale(-1, 1)">
+                <g fill="#333" data-name="Group 12">
+                  <path d="M0 4.657h18v2H0z" data-name="Rectangle 2400"></path>
+                  <path
+                    d="M13.586 9.9l5.6568542-5.6568542 1.4142136 1.4142135-5.6568542 5.6568543z"
+                    data-name="Rectangle 2401">
+                  </path>
+                  <path
+                    d="M15 0l5.6568542 5.6568542-1.4142135 1.4142136-5.6568543-5.6568542z"
+                    data-name="Rectangle 2402">
+                  </path>
+                </g>
+              </svg>
+            </a>
+          </li>
+        {{ end }} 
+        {{ range $paginator.Pagers }}
+          <li class="page-item">
+            <a
+              class="page-link {{ if eq . $paginator }}active{{ end }}"
+              href="{{.URL}}">
+              {{ .PageNumber }}
+            </a>
+          </li>
+        {{ end }} 
+        {{ if $paginator.HasNext }}
+          <li class="page-item">
+            <a class="page-link" href="{{ $paginator.Next.URL }}">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20.657"
+                height="11.314"
+                viewBox="0 0 20.657 11.314">
+                <g fill="#333" data-name="Group 12">
+                  <path d="M0 4.657h18v2H0z" data-name="Rectangle 2400"></path>
+                  <path
+                    d="M13.586 9.9l5.6568542-5.6568542 1.4142136 1.4142135-5.6568542 5.6568543z"
+                    data-name="Rectangle 2401">
+                  </path>
+                  <path
+                    d="M15 0l5.6568542 5.6568542-1.4142135 1.4142136-5.6568543-5.6568542z"
+                    data-name="Rectangle 2402">
+                  </path>
+                </g>
+              </svg>
+            </a>
+          </li>
+        {{ end }}
+      </ul>
+    </nav>
+  {{ end }}
+</section>

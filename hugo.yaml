@@ -1,6 +1,6 @@
 baseURL: 'https://whole-piano.cloudvent.net/'
 languageCode: en-us
-title: Hugo Bookshop Starter
+title: Monotasker Shared Resources
 module:
   replacements: local/component-library -> ../component-library
   imports:

@@ -72,6 +72,135 @@ collections_config:
             subtext:
               - key: image_path
               - Update Image Path and Alt Text
+  prompts:
+    icon: lightbulb
+    path: content/prompts
+    url: '/prompts/[full_slug]/'
+    schemas:
+      default:
+        path: '.cloudcannon/schemas/prompt.md'
+    create:
+      path: '[relative_base_path]/{filename|slugify|lowercase}.md'
+    add_options:
+      - name: Add Prompt
+        editor: content
+        schema: default
+    _enabled_editors:
+      - visual
+      - content
+    _inputs:
+      category:
+        type: select
+        options:
+          values:
+            - System Prompts
+            - User Prompts
+            - Code Generation
+            - Analysis
+            - Creative
+            - Technical Documentation
+      difficulty:
+        type: select
+        options:
+          values:
+            - Beginner
+            - Intermediate
+            - Advanced
+  personas:
+    icon: people
+    path: content/personas
+    url: '/personas/[full_slug]/'
+    schemas:
+      default:
+        path: '.cloudcannon/schemas/persona.md'
+    create:
+      path: '[relative_base_path]/{filename|slugify|lowercase}.md'
+    add_options:
+      - name: Add Persona
+        editor: content
+        schema: default
+    _enabled_editors:
+      - visual
+      - content
+    _inputs:
+      primary_role:
+        type: select
+        options:
+          values:
+            - Specialist
+            - Developer
+            - Manager
+            - User
+            - Creative Partner
+            - Coach
+            - Assistant
+            - Analyst
+            - Business Owner
+      communication_style:
+        type: select
+        options:
+          values:
+            - Direct
+            - Technical
+            - Professional
+            - Conversational
+            - Casual
+            - Academic
+            - Persuasive
+            - Simple
+            - Authentic
+      status:
+        type: select
+        options:
+          values:
+            - In Development
+            - Active
+            - Archived
+            - Testing
+      pronoun_formality:
+        type: select
+        options:
+          values:
+            - Casual I/Me
+            - Formal I/Me
+            - Casual You/Your
+            - Formal You/Your
+            - Formal They/Them
+            - Mixed Style
+      key_traits:
+        type: multiselect
+        options:
+          values:
+            - Analytical
+            - Creative
+            - Logical
+            - Patient
+            - Enthusiastic
+            - Friendly
+            - Critical
+            - Detailed-oriented
+            - Strategic
+            - Thorough
+            - Authoritative
+            - Adaptive
+            - Curious
+            - Innovative
+            - Persistent
+            - Problem-Solver
+            - Systematic
+            - Efficient
+            - Precise
+            - Forward-Thinking
+            - Knowledgeable
+            - Principled
+            - Diplomatic
+            - Decisive
+            - Empathetic
+            - Result-Driven
+            - Time-conscious
+            - Data-driven
+            - Inqusitive
+            - Methodical
   data:
     path: data
     disable_url: true
@@ -83,10 +212,14 @@ collections_config:
         type: color
 
 collection_groups:
-  - heading: Pages
+  - heading: Content
     collections:
       - pages
       - blog
+  - heading: Resources
+    collections:
+      - prompts
+      - personas
   - heading: Data
     collections:
       - data

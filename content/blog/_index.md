@@ -1,9 +1,9 @@
 ---
 _schema: paginated
-title: Blog
+title: Updates
 page_size: 6
 seo:
-  page_description: Hugo CloudCannon Starter Blog
+  page_description: Monotasker Project Updates
   canonical_url: 
   featured_image: 
   open_graph_type:

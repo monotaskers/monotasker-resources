@@ -1,0 +1,3 @@
+{{ define "main" }}
+  {{ partial "resource-list" (dict "context" . "page_size" .Params.page_size) }}
+{{ end }}
