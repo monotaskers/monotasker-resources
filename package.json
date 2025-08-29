@@ -1,7 +1,12 @@
 {
-  "name": "hugo-bookshop-starter",
+  "name": "monotasker-resources",
   "type": "module",
-  "description": "A starter template for Hugo with Bookshop",
+  "description": "Developer resources for use with monotasker",
+  "engines": {
+    "node": ">=22.16.0",
+    "pnpm": ">=10.14.0"
+  },
+  "packageManager": "pnpm@10.14.0",
   "scripts": {
     "start": "run-p dev:hugo",
     "build": "run-p build:*",
@@ -12,16 +17,6 @@
     "pagefind": "npx -y pagefind --site public --serve",
     "pagefind-server": "run-s build pagefind"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/CloudCannon/hugo-bookshop-starter.git"
-  },
-  "author": "CloudCannon",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/CloudCannon/hugo-bookshop-starter/issues"
-  },
-  "homepage": "https://github.com/CloudCannon/hugo-bookshop-starter#readme",
   "devDependencies": {
     "@bookshop/generate": "3.16.1",
     "@bookshop/hugo-engine": "3.16.1",
